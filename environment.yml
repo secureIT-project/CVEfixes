@@ -1,0 +1,17 @@
+name: CVEfixes
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+ - python~=3.8
+ - pandas~=1.2
+ - numpy~=1.19
+ - requests~=2.24
+ - PyGithub~=1.54
+ - jupyter
+ - seaborn
+ - matplotlib
+ - pip
+ - pip:
+   - PyDriller~=2.0
+   - guesslang~=2.0

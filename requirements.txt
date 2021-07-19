@@ -1,0 +1,9 @@
+pandas~=1.2
+numpy~=1.19
+requests~=2.24
+PyDriller~=2.0
+PyGithub~=1.54
+guesslang~=2.0
+jupyter
+seaborn
+matplotlib
