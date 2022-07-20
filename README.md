@@ -5,8 +5,8 @@
 
 _CVEfixes_ is a comprehensive vulnerability dataset that is automatically
 collected and curated from Common Vulnerabilities and Exposures
-(CVE) records in the public [U.S. National Vulnerability Database (NVD)]
-(https://nvd.nist.gov/). The goal is to support data-driven security
+(CVE) records in the public [U.S. National Vulnerability Database (NVD)](https://nvd.nist.gov/).
+The goal is to support data-driven security
 research based on source code and source code metrics related to fixes
 for CVEs in the NVD by providing detailed information at different
 interlinked levels of abstraction, such as the commit-, file-, and
