@@ -22,8 +22,8 @@ $ gzcat Data/CVEfixes.sql.gz | sqlite3 Data/CVEfixes.db
 
 ## Exploring the vulnerability data
 
-The overall structure of the database is as shown in [ER diagram]
-(Doc/ER_diagram.png). You can use any SQLite tool to view and query the
+The overall structure of the database is as shown in [ER diagram](Doc/ER_diagram.png). 
+You can use any SQLite tool to view and query the
 database. [DB Browser for SQLite](https://sqlitebrowser.org/) is an
 open source visual explorer for SQLite databases that is available for
 Mac, Windows and Linux.
@@ -31,9 +31,8 @@ Mac, Windows and Linux.
 We provide a [Jupyter Notebook](Examples/query_CVEfixes.ipynb) with
 example queries to extract the data at different abstraction levels,
 code to generate statistics, as well as the code to replicate all
-tables and plots presented in the [paper]
-(Doc/Bhandari-Naseer-Moonen_-_CVEfixes.pdf) based on the _CVEfixes_
-data. 
+tables and plots presented in the [paper](Doc/Bhandari-Naseer-Moonen_-_CVEfixes.pdf) 
+based on the _CVEfixes_ data. 
 
 Some example queries to extract the part of _CVEfixes_ database are as
 follows:
@@ -88,8 +87,7 @@ The repository contains a file `example.CVEfixes.ini`.
 ## Setting up a GitHub token
 
 We observe that more than 98% repositories of _CVEfixes_ are hosted on
-GitHub. The [GitHub API]
-(https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)
+GitHub. The [GitHub API](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)
 allows us to retrieve meta information of public repositories. Without
 configuration of a token, this API is rate limited and only allows
 gathering the information for approximately 25 repositories. Thus, we
