@@ -1,14 +1,14 @@
 import ast
 import json
-import os
 import time
+import fnmatch
 import xml.etree.ElementTree as et
 import pandas as pd
+from pathlib import Path
 from io import BytesIO
 from urllib.request import urlopen
 from zipfile import ZipFile
 from pandas import json_normalize
-
 import configuration as cf
 
 # --------------------------------------------------------------------------------------------------------
@@ -20,22 +20,27 @@ def extract_cwe():
     :return df_CWE: dataframe of CWE category table
     """
 
-    if os.path.isdir(cf.DATA_PATH + "cwec_v4.4.xml"):
-        cf.logger.info("Reusing the CWE XML file that is already in the directory")
-        xtree = et.parse(cf.DATA_PATH + "cwec_v4.4.xml")
+    cwe_doc = sorted(Path(cf.DATA_PATH).glob('cwec_*.xml'))
+    if len(cwe_doc) > 0:
+        cf.logger.info('Reusing the CWE XML file that is already in the directory')
+        xtree = et.parse(cf.DATA_PATH + cwe_doc[-1])
     else:
-        cwe_csv_url = "https://cwe.mitre.org/data/xml/cwec_latest.xml.zip"
+        cwe_csv_url = 'https://cwe.mitre.org/data/xml/cwec_latest.xml.zip'
         cwe_zip = ZipFile(BytesIO(urlopen(cwe_csv_url).read()))
-        cwefile = cwe_zip.extract("cwec_v4.4.xml", cf.DATA_PATH)
-        xtree = et.parse(cwefile)
+        cwe_doc = sorted(fnmatch.filter(cwe_zip.namelist(),'cwec_*.xml'))  # assumes all files at top level
+        assert len(cwe_doc) > 0, \
+            'Cannot find a CWE XML file in https://cwe.mitre.org/data/xml/cwec_latest.xml.zip'
+        cf.logger.info(f'Extracting CWE data from {cwe_doc[-1]}')
+        cwe_file = cwe_zip.extract(cwe_doc[-1], cf.DATA_PATH)
+        xtree = et.parse(cwe_file)
         time.sleep(2)
 
     xroot = xtree.getroot()
     cat_flag = 0
     rows = []
 
-    for parents in xroot[0:2]:  # taking only 0, 1 and 2 (index 0 is for weaknesses, 1 for Categories, 2 for Views, 3 for External_References)
-
+    # include only types 0, 1 and 2 (0 is for weaknesses, 1 for Categories, 2 for Views, 3 for External_References)
+    for parents in xroot[0:2]:
         for node in parents:
             cwe_id = 'CWE-' + str(node.attrib['ID'])
             cwe_name = node.attrib['Name'] if node.attrib['Name'] is not None else None
