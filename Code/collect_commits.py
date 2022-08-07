@@ -96,7 +96,7 @@ def extract_project_links(df_master):
                     df_fixes = df_fixes.append(pd.Series(row), ignore_index=True)
 
     df_fixes = df_fixes.drop_duplicates().reset_index(drop=True)
-    cf.logger.info('Number of collected references to vulnerability fixing commits:', len(df_fixes))
+    cf.logger.info(f'Number of collected references to vulnerability fixing commits: {len(df_fixes)}')
     return df_fixes
 
 
@@ -111,7 +111,7 @@ def guess_pl(code):
 
 
 def clean_string(signature):
-    return signature.strip().replace(' ','')
+    return signature.strip().replace(' ', '')
 
 
 def get_method_code(source_code, start_line, end_line):
@@ -122,7 +122,7 @@ def get_method_code(source_code, start_line, end_line):
         else:
             return None
     except Exception as e:
-        cf.logger.warning('Problem while getting method code from the file!', e)
+        cf.logger.warning(f'Problem while extracting method code from the changed file contents: {e}')
         pass
 
 
@@ -161,19 +161,19 @@ def get_methods(file, file_change_id):
     try:
         if file.changed_methods:
             cf.logger.debug('-' * 70)
-            cf.logger.debug('\nmethods_after: ')
+            cf.logger.debug('methods_after: ')
             cf.logger.debug('- ' * 35)
             for m in file.methods:
                 if m.name != '(anonymous)':
                     cf.logger.debug(m.long_name)
 
-            cf.logger.debug('\nmethods_before: ')
+            cf.logger.debug('methods_before: ')
             cf.logger.debug('- ' * 35)
             for mb in file.methods_before:
                 if mb.name != '(anonymous)':
                     cf.logger.debug(mb.long_name)
 
-            cf.logger.debug('\nchanged_methods: ')
+            cf.logger.debug('changed_methods: ')
             cf.logger.debug('- ' * 35)
             for mc in file.changed_methods:
                 if mc.name != '(anonymous)':
@@ -186,7 +186,7 @@ def get_methods(file, file_change_id):
             #         if clean_string(mc.long_name) == clean_string(mb.long_name) and mc.name != '(anonymous)':
 
             if file.changed_methods:
-                methods_after, methods_before = changed_methods_both(file) # modified methods in source_code_after/_before
+                methods_after, methods_before = changed_methods_both(file)  # in source_code_after/_before
                 if methods_before:
                     for mb in methods_before:
                         # filtering out code not existing, and (anonymous)
@@ -241,7 +241,7 @@ def get_methods(file, file_change_id):
             return None
 
     except Exception as e:
-        cf.logger.warning('Problem while fetching the methods!', e)
+        cf.logger.warning(f'Problem while fetching the methods: {e}')
         pass
 
 
@@ -280,7 +280,6 @@ def get_files(commit):
                     'token_count': file.token_count,
                     'programming_language': programming_language,
                 }
-                file_methods = []
                 commit_files.append(file_row)
                 file_methods = get_methods(file, file_change_id)
 
@@ -292,7 +291,7 @@ def get_files(commit):
         return commit_files, commit_methods
 
     except Exception as e:
-        cf.logger.warning('Problem while fetching the files!', e)
+        cf.logger.warning(f'Problem while fetching the files: {e}')
         pass
 
 
@@ -351,13 +350,11 @@ def extract_commits(repo_url, hashes):
                 'dmm_unit_size': commit.dmm_unit_size,
             }
             commit_files, commit_methods = get_files(commit)
-
             repo_commits.append(commit_row)
             repo_files.extend(commit_files)
             repo_methods.extend(commit_methods)
-
         except Exception as e:
-            cf.logger.warning('Problem while fetching the commits!', e)
+            cf.logger.warning(f'Problem while fetching the commits: {e}')
             pass
 
     if repo_commits:
@@ -377,6 +374,5 @@ def extract_commits(repo_url, hashes):
         df_repo_methods = df_repo_methods[method_columns]  # ordering the
     else:
         df_repo_methods = None
-
 
     return df_repo_commits, df_repo_files, df_repo_methods

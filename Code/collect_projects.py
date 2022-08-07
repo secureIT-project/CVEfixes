@@ -47,7 +47,6 @@ def filter_urls(urls):
     return non_exist_urls
 
 
-
 def convert_runtime(start_time, end_time):
     """
     converts runtime of the slice of code more readable format
@@ -57,7 +56,6 @@ def convert_runtime(start_time, end_time):
     minutes = (runtime % 3600)/60
     seconds = (runtime % 3600) % 60
     return hours, minutes, seconds
-
 
 
 def get_ref_links():
@@ -74,10 +72,9 @@ def get_ref_links():
         df_master = pd.read_sql("SELECT * FROM cve", con=db.conn)
         df_fixes = extract_project_links(df_master)
 
-        cf.logger.info('Checking if references still exist...')
+        cf.logger.info('Checking if references are still accessible...')
         unique_urls = set(list(df_fixes.repo_url))
 
-        unfetched_urls = []
         unfetched_urls = filter_urls(unique_urls)
 
         if len(unfetched_urls) > 0:
@@ -101,13 +98,12 @@ def get_ref_links():
     return df_fixes
 
 
-
 def get_github_meta(repo_url, username, token):
     """
     returns github meta-information of the repo_url
     """
     owner, project = repo_url.split('/')[-2], repo_url.split('/')[-1]
-    meta_row ={}
+    meta_row = {}
 
     if username == 'None':
         git_link = Github()
@@ -128,13 +124,12 @@ def get_github_meta(repo_url, username, token):
                     'stars_count': repo.stargazers_count,
                     'owner': owner}
     except BadCredentialsException as e:
-        cf.logger.warning(f'Credential problem while accessing GitHub repository {repo_url}\n', getattr(e, 'message', repr(e)))
+        cf.logger.warning(f'Credential problem while accessing GitHub repository {repo_url}: {e}')
         pass  # or exit(1)
     except Exception as e:
-        cf.logger.warning(f'Other issues while getting meta-data for GitHub repository {repo_url}\n', e)
+        cf.logger.warning(f'Other issues while getting meta-data for GitHub repository {repo_url}: {e}')
         pass  # or exit(1)
     return meta_row
-
 
 
 def save_repo_meta(repo_url):
@@ -153,8 +148,7 @@ def save_repo_meta(repo_url):
             else:
                 df_meta.to_sql(name='repository', con=db.conn, if_exists="replace", index=False)
         except Exception as e:
-            cf.logger.warning('Problem while fetching repository meta-information\n', e)
-
+            cf.logger.warning(f'Problem while fetching repository meta-information: {e}')
 
 
 def store_tables(df_fixes):
@@ -178,8 +172,7 @@ def store_tables(df_fixes):
             df_single_repo = df_fixes[df_fixes.repo_url == repo_url]
             hashes = list(df_single_repo.hash.unique())
             cf.logger.info('-' * 70)
-            cf.logger.info('Retrieving fixes for repo', pcount, 'of', len(repo_urls),
-                  '-',  repo_url.rsplit("/")[-1])
+            cf.logger.info(f'Retrieving fixes for repo {pcount} of {len(repo_urls)} - {repo_url.rsplit("/")[-1]}')
 
             # extract_commits method returns data at different granularity levels
             df_commit, df_file, df_method = extract_commits(repo_url, hashes)
@@ -189,26 +182,25 @@ def store_tables(df_fixes):
                     # ----------------appending each project data to the tables-------------------------------
                     df_commit = df_commit.applymap(str)
                     df_commit.to_sql(name="commits", con=db.conn, if_exists="append", index=False)
-                    cf.logger.debug('#Commits :', len(df_commit))
+                    cf.logger.debug(f'#Commits: {len(df_commit)}')
 
                     if df_file is not None:
                         df_file = df_file.applymap(str)
                         df_file.to_sql(name="file_change", con=db.conn, if_exists="append", index=False)
-                        cf.logger.debug('#Files   :', len(df_file))
+                        cf.logger.debug(f'#Files: {len(df_file)}')
 
                     if df_method is not None:
                         df_method = df_method.applymap(str)
                         df_method.to_sql(name="method_change", con=db.conn, if_exists="append", index=False)
-                        cf.logger.debug('#Methods :', len(df_method))
+                        cf.logger.debug(f'#Methods: {len(df_method)}')
 
                     save_repo_meta(repo_url)
             else:
-                cf.logger.warning(f'Could not retrieve commit information from: {repo_url}\n')
+                cf.logger.warning(f'Could not retrieve commit information from: {repo_url}')
 
         except Exception as e:
-            cf.logger.warning(f'Problem occurred while retrieving the project: {repo_url}\n', e)
+            cf.logger.warning(f'Problem occurred while retrieving the project: {repo_url}: {e}')
             pass  # skip fetching repository if is not available.
-
 
     cf.logger.debug('-' * 70)
     if db.table_exists('commits'):
@@ -216,7 +208,6 @@ def store_tables(df_fixes):
         cf.logger.debug(f'Number of commits retrieved from all the repos: {commit_count}')
     else:
         cf.logger.warning('The commits table does not exist')
-
 
     if db.table_exists('file_change'):
         file_count = str(pd.read_sql("SELECT count(*) from file_change;", con=db.conn).iloc[0].iloc[0])
@@ -247,7 +238,7 @@ if __name__ == '__main__':
     if db.table_exists('method_change'):
         prune_tables(cf.DATABASE)
     else:
-        cf.logger.warning('Data pruning is not possible because there is not information in method_change table')
+        cf.logger.warning('Data pruning is not possible because there is no information in method_change table')
 
     cf.logger.info('The database is up-to-date.')
     cf.logger.info('-' * 70)

@@ -16,17 +16,17 @@ LOGGING_LEVEL = logging.WARNING
 DATABASE = Path(DATA_PATH) / DATABASE_NAME
 config_read = False
 
-log_level_map = { 'DEBUG': logging.DEBUG,
-                  'INFO': logging.INFO,
-                  'WARNING': logging.WARNING,
-                  'ERROR': logging.ERROR,
-                  'CRITICAL': logging.CRITICAL,
-                }
+log_level_map = {'DEBUG': logging.DEBUG,
+                 'INFO': logging.INFO,
+                 'WARNING': logging.WARNING,
+                 'ERROR': logging.ERROR,
+                 'CRITICAL': logging.CRITICAL
+                 }
 
 logging.basicConfig(level=LOGGING_LEVEL,
-                    format='%(asctime)s %(levelname)-3s: %(message)s',
+                    format='%(asctime)s %(name)s %(levelname)s %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S')
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('CVEfixes')
 logger.removeHandler(sys.stderr)
 
 
@@ -36,7 +36,7 @@ def read_config() -> None:
 
     Sets global constants with values found in the ini file.
     """
-    global DATA_PATH, DATABASE_NAME, DATABASE, USER, TOKEN, SAMPLE_LIMIT, NUM_WORKERS, config_read
+    global DATA_PATH, DATABASE_NAME, DATABASE, USER, TOKEN, SAMPLE_LIMIT, NUM_WORKERS, LOGGING_LEVEL, config_read
 
     config = ConfigParser()
     if config.read(['.CVEfixes.ini',
@@ -62,12 +62,10 @@ if not config_read:
     read_config()
     logger.setLevel(LOGGING_LEVEL)
     logging.getLogger("requests").setLevel(LOGGING_LEVEL)
-    logging.getLogger("urllib3").setLevel(LOGGING_LEVEL)
-    logging.getLogger("urllib3.connection").setLevel(LOGGING_LEVEL)
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    logging.getLogger("urllib3.connection").setLevel(logging.WARNING)
     logging.getLogger("pathlib").setLevel(LOGGING_LEVEL)
     logging.getLogger("subprocess").setLevel(LOGGING_LEVEL)
-    logging.getLogger("h5py._conv").setLevel(LOGGING_LEVEL)
+    logging.getLogger("h5py._conv").setLevel(logging.WARNING)
     logging.getLogger("git.cmd").setLevel(LOGGING_LEVEL)
     logging.getLogger("github.Requester").setLevel(LOGGING_LEVEL)
-
-

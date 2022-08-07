@@ -1,7 +1,5 @@
-import glob
 import os
 import json
-from shutil import copyfile
 from datetime import date
 from pathlib import Path
 
@@ -37,13 +35,13 @@ def create_zip_files():
 
     # overwrite whatever was saved before for this timestamp with the current data
     if os.system('gzip -c Data/cwec_v4.4.xml > ' + str(cwe_xml_gz)) == 0:
-        cf.logger.info('CWE XML file is saved to', cwe_xml_gz)
+        cf.logger.info(f'CWE XML file is saved to {cwe_xml_gz}')
 
     if os.system('jq -c "." Data/json/*.json | gzip > ' + str(jsonl_gz)) == 0:
-        cf.logger.info('JSON files are zipped to', jsonl_gz)
+        cf.logger.info(f'JSON files are zipped to {jsonl_gz}')
 
     if os.system('sqlite3 ' + str(cf.DATABASE) + ' .dump | gzip > ' + str(db_sql_gz)) == 0:
-        cf.logger.info('The sql dump of the database file is zipped to', db_sql_gz)
+        cf.logger.info(f'The sql dump of the database file is zipped to {db_sql_gz}')
 
 
 def add_tbd_repos(tbd_repos):
@@ -79,7 +77,7 @@ def filter_non_textual(df_file):
         if df_file.num_lines_added[i] == '0' and df_file.num_lines_deleted[i] == '0':
             non_text_files.append(df_file.file_change_id[i])
             count_files += 1
-    cf.logger.debug('Non-textual files: ', count_files)
+    cf.logger.debug(f'Non-textual files: {count_files}')
 
     assert len(df_file[df_file.file_change_id.isin(non_text_files)]) == len(non_text_files), \
         'Non-textual files should not be more than len of the items in file table'
@@ -93,7 +91,7 @@ def prune_tables(datafile):
     """
     filtering out the unlinked data from the tables.
     """
-    cf.logger.info('-'*70)
+    cf.logger.info('-' * 70)
     cf.logger.info('Wait while pruning the data...')
     # copyfile(datafile, str(datafile).split('.')[0] + '_raw.db')
 
@@ -106,7 +104,6 @@ def prune_tables(datafile):
     df_cwe_class = pd.read_sql('SELECT * FROM cwe_classification', con=connf)
     df_cwe = pd.read_sql('SELECT * FROM cwe', con=connf)
     df_repo = pd.read_sql('SELECT * FROM repository', con=connf)
-
 
     # processing commit, file and method tables for filtering out some invalid records
     df_commit['repo_url'] = df_commit.repo_url.apply(lambda x: x.rsplit('.git')[0])
@@ -123,14 +120,13 @@ def prune_tables(datafile):
             if short_hash.strip()[0:4] == full_hash.strip()[0:4]:
                 df_fixes.loc[df_fixes.hash == short_hash, 'hash'] = full_hash
                 count_replaces += 1
-    cf.logger.debug('#Short hashes are replaced by the long hashes: ', count_replaces)
+    cf.logger.debug(f'#Short hashes are replaced by the long hashes: {count_replaces}')
 
     # filtering some non-textual files
     df_file = filter_non_textual(df_file)
     # filtering some no names methods
     no_name_methods = list(df_method[df_method.name == ''].name.unique())
     df_method = df_method[~df_method.name.isin(no_name_methods)].reset_index(drop=True)
-
 
     # filtering out the hashes that are not correctly collected in the commits table
     incorrect_hashes = set(list(df_commit.hash.unique())).difference(set(list(df_fixes.hash.unique())))

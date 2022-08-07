@@ -118,7 +118,7 @@ def import_cves():
 
             # Check if the directory already has the json file or not ?
             if os.path.isfile(Path(cf.DATA_PATH) / 'json' / extract_target):
-                cf.logger.warning('Reusing', year, 'CVE json file that was downloaded earlier...')
+                cf.logger.warning(f'Reusing the {year} CVE json file that was downloaded earlier...')
                 json_file = Path(cf.DATA_PATH) / 'json' / extract_target
             else:
                 # url_to_open = urlopen(zip_file_url, timeout=10)
@@ -132,7 +132,7 @@ def import_cves():
                     df_cve = pd.DataFrame(yearly_data)
                 else:
                     df_cve = df_cve.append(pd.DataFrame(yearly_data))
-                cf.logger.info(str(year), 'CVE json file has been merged')
+                cf.logger.info(f'The CVE json for {year} has been merged')
 
         df_cve = preprocess_jsons(df_cve)
         df_cve = df_cve.applymap(str)
@@ -157,7 +157,7 @@ def import_cves():
 
         no_ref_cwes = set(list(df_cwes_class.cwe_id)).difference(set(list(df_cwes.cwe_id)))
         if len(no_ref_cwes) > 0:
-            cf.logger.debug('List of CWEs from CVEs that are not associated to cwe table are as follows:- ')
+            cf.logger.debug('List of CWEs from CVEs that are not associated to cwe table are as follows:')
             cf.logger.debug(no_ref_cwes)
 
         # Applying the assertion to cve-, cwe- and cwe_classification table.
