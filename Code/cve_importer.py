@@ -65,7 +65,7 @@ def preprocess_jsons(df_in):
     Flattening CVE_Items and removing the duplicates
     :param df_in: merged dataframe of all years json files
     """
-    cf.logger.info('Flattening CVE_Items and removing the duplicates...')
+    cf.logger.info('Flattening CVE items and removing the duplicates...')
     cve_items = json_normalize(df_in['CVE_Items'])
     df_cve = pd.concat([df_in.reset_index(), cve_items], axis=1)
 

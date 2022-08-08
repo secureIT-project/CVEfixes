@@ -80,7 +80,7 @@ def extract_project_links(df_master):
     df_fixes = pd.DataFrame(columns=fixes_columns)
     git_url = r'(((?P<repo>(https|http):\/\/(bitbucket|github|gitlab)\.(org|com)\/(?P<owner>[^\/]+)\/(?P<project>[^\/]*))\/(commit|commits)\/(?P<hash>\w+)#?)+)'
     cf.logger.info('-' * 70)
-    cf.logger.info('Extracting all the reference urls from CVE...')
+    cf.logger.info('Extracting all reference URLs from CVEs...')
     for i in range(len(df_master)):
         ref_list = ast.literal_eval(df_master['reference_json'].iloc[i])
         if len(ref_list) > 0:
@@ -96,7 +96,7 @@ def extract_project_links(df_master):
                     df_fixes = df_fixes.append(pd.Series(row), ignore_index=True)
 
     df_fixes = df_fixes.drop_duplicates().reset_index(drop=True)
-    cf.logger.info(f'Number of collected references to vulnerability fixing commits: {len(df_fixes)}')
+    cf.logger.info(f'Found {len(df_fixes)} references to vulnerability fixing commits')
     return df_fixes
 
 

@@ -34,13 +34,15 @@ def filter_urls(urls):
     for url in urls:
         code = requests.head(url).status_code
 
+        # wait while sending too many requests (increasing timeout on every iteration)
         while code == 429:
             sleeptime += 10
             time.sleep(sleeptime)
             code = requests.head(url).status_code
 
         if code >= 400:
-            non_exist_urls.append(url + ',' + str(code))
+            cf.logger.debug(f'Reference { url } is not not accessible with code: { code }')
+            non_exist_urls.append(url)
 
         sleeptime = 0
 
@@ -72,17 +74,17 @@ def get_ref_links():
         df_master = pd.read_sql("SELECT * FROM cve", con=db.conn)
         df_fixes = extract_project_links(df_master)
 
-        cf.logger.info('Checking if references are still accessible...')
+        cf.logger.info('Checking if the references are still accessible...')
         unique_urls = set(list(df_fixes.repo_url))
 
-        unfetched_urls = filter_urls(unique_urls)
+        unavailable_urls = filter_urls(unique_urls)
 
-        if len(unfetched_urls) > 0:
-            cf.logger.debug('The following URLs are not accessible:')
-            cf.logger.debug(unfetched_urls)
+        if len(unavailable_urls) > 0:
+            cf.logger.debug(f'Of { len(unique_urls) } unique references, { len(unavailable_urls) } are not accessible')
 
         # filtering out non-existing repo_urls
-        df_fixes = df_fixes[~df_fixes['repo_url'].isin(unfetched_urls)]
+        df_fixes = df_fixes[~df_fixes['repo_url'].isin(unavailable_urls)]
+        cf.logger.debug(f'After filtering, {len(df_fixes)} references remain ({ len(set(list(df_fixes.repo_url))) } unique)')
 
         if cf.SAMPLE_LIMIT > 0:
             # filtering out some of the major projects that would take a long time for a simplified example database.
@@ -229,6 +231,7 @@ def store_tables(df_fixes):
 
 # ---------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
+    print(filter_urls([]))
     start_time = time.perf_counter()
     # Step (1) save CVEs(cve) and cwe tables
     cve_importer.import_cves()
