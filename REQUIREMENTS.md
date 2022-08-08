@@ -14,9 +14,4 @@
      at the time of development as respectively
      [requirements.frozen.txt](requirements.frozen.txt) and [environment.frozen.yml](environment.frozen.yml)
    - _note that other versions of these packages may work but have not been tested_
-    
-**Note Aug 2022**: replication experiments show that the minimally constrained 
-requirements can lead to issues due to incompatible changes to some dependencies. 
-We are working on updating the minimal requirements, but until that time recommend
-using the frozen versions.  The frozen versions are confirmed to work on (Intel) 
-macOS 12.5 and Ubuntu 20.04LTS with python v3.8 and v3.9.
+ 

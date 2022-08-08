@@ -8,10 +8,11 @@ dependencies:
  - numpy~=1.19
  - requests~=2.24
  - PyGithub~=1.54
+ - tensorflow==2.5.0
  - jupyter
  - seaborn
  - matplotlib
  - pip
  - pip:
    - PyDriller~=2.0
-   - guesslang~=2.0
+   - guesslang~=2.0.3
