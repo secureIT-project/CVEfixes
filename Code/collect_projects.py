@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 import time
+from math import floor
 from github import Github
 from github.GithubException import BadCredentialsException
 
@@ -49,7 +50,7 @@ def filter_urls(urls):
     return non_exist_urls
 
 
-def convert_runtime(start_time, end_time):
+def convert_runtime(start_time, end_time) -> (int, int, int):
     """
     converts runtime of the slice of code more readable format
     """
@@ -57,7 +58,7 @@ def convert_runtime(start_time, end_time):
     hours = runtime/3600
     minutes = (runtime % 3600)/60
     seconds = (runtime % 3600) % 60
-    return hours, minutes, seconds
+    return floor(hours), floor(minutes), round(seconds)
 
 
 def get_ref_links():
