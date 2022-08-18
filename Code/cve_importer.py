@@ -92,7 +92,7 @@ def preprocess_jsons(df_in):
             'impact.baseMetricV2.exploitabilityScore',
             'impact.baseMetricV2.impactScore',
             'impact.baseMetricV3.cvssV3.version',
-        ], axis=1, )
+        ], axis=1, errors='ignore')
 
     # renaming the column names
     df_cve.columns = [rename_columns(i) for i in df_cve.columns]
@@ -103,7 +103,7 @@ def preprocess_jsons(df_in):
     return df_cve
 
 
-def associate_cves_to_cwes(df_cve: pd.DataFrame):
+def assign_cwes_to_cves(df_cve: pd.DataFrame):
     df_cwes = extract_cwe()
     # fetching CWE associations to CVE records
     cf.logger.info('Adding CWE category to CVE records...')
@@ -172,4 +172,4 @@ def import_cves():
         cf.logger.info('All CVEs have been merged into the cve table')
         cf.logger.info('-' * 70)
 
-        associate_cves_to_cwes(df_cve=df_cve)
+        assign_cwes_to_cves(df_cve=df_cve)
