@@ -103,6 +103,37 @@ def preprocess_jsons(df_in):
     return df_cve
 
 
+def associate_cves_to_cwes(df_cve: pd.DataFrame):
+    df_cwes = extract_cwe()
+    # fetching CWE associations to CVE records
+    cf.logger.info('Adding CWE category to CVE records...')
+    df_cwes_class = df_cve[['cve_id', 'problemtype_json']].copy()
+    df_cwes_class['cwe_id'] = add_cwe_class(df_cwes_class['problemtype_json'].tolist())  # list of CWE-IDs' portion
+
+    # exploding the multiple CWEs list of a CVE into multiple rows.
+    df_cwes_class = df_cwes_class.assign(
+        cwe_id=df_cwes_class.cwe_id).explode('cwe_id').reset_index()[['cve_id', 'cwe_id']]
+    df_cwes_class = df_cwes_class.drop_duplicates(subset=['cve_id', 'cwe_id']).reset_index(drop=True)
+    df_cwes_class['cwe_id'] = df_cwes_class['cwe_id'].str.replace('unknown', 'NVD-CWE-noinfo')
+
+    no_ref_cwes = set(list(df_cwes_class.cwe_id)).difference(set(list(df_cwes.cwe_id)))
+    if len(no_ref_cwes) > 0:
+        cf.logger.debug('List of CWEs from CVEs that are not associated to cwe table are as follows:')
+        cf.logger.debug(no_ref_cwes)
+
+    # Applying the assertion to cve-, cwe- and cwe_classification table.
+    assert df_cwes.cwe_id.is_unique, "Primary keys are not unique in cwe records!"
+    assert df_cwes_class.set_index(['cve_id', 'cwe_id']).index.is_unique, \
+        'Primary keys are not unique in cwe_classification records!'
+    assert set(list(df_cwes_class.cwe_id)).issubset(set(list(df_cwes.cwe_id))), \
+        'Not all foreign keys for the cwe_classification records are present in the cwe table!'
+
+    df_cwes = df_cwes[cwe_columns].reset_index()  # to maintain the order of the columns
+    df_cwes.to_sql(name="cwe", con=db.conn, if_exists='replace', index=False)
+    df_cwes_class.to_sql(name='cwe_classification', con=db.conn, if_exists='replace', index=False)
+    cf.logger.info('Added cwe and cwe_classification tables')
+
+
 def import_cves():
     """
     gathering CVE records by processing JSON files.
@@ -141,35 +172,4 @@ def import_cves():
         cf.logger.info('All CVEs have been merged into the cve table')
         cf.logger.info('-' * 70)
 
-        # --------------------------------------------------------------------------------------------------------
-
-        df_cwes = extract_cwe()
-        # fetching CWE associations to CVE records
-        cf.logger.info('Adding CWE category to CVE records...')
-        df_cwes_class = df_cve[['cve_id', 'problemtype_json']].copy()
-        df_cwes_class['cwe_id'] = add_cwe_class(df_cwes_class['problemtype_json'].tolist())  # list of CWE-IDs' portion
-
-        # exploding the multiple CWEs list of a CVE into multiple rows.
-        df_cwes_class = df_cwes_class.assign(
-            cwe_id=df_cwes_class.cwe_id).explode('cwe_id').reset_index()[['cve_id', 'cwe_id']]
-        df_cwes_class = df_cwes_class.drop_duplicates(subset=['cve_id', 'cwe_id']).reset_index(drop=True)
-        df_cwes_class['cwe_id'] = df_cwes_class['cwe_id'].str.replace('unknown', 'NVD-CWE-noinfo')
-
-        no_ref_cwes = set(list(df_cwes_class.cwe_id)).difference(set(list(df_cwes.cwe_id)))
-        if len(no_ref_cwes) > 0:
-            cf.logger.debug('List of CWEs from CVEs that are not associated to cwe table are as follows:')
-            cf.logger.debug(no_ref_cwes)
-
-        # Applying the assertion to cve-, cwe- and cwe_classification table.
-        assert df_cwes.cwe_id.is_unique, "Primary keys are not unique in cwe records!"
-        assert df_cwes_class.set_index(['cve_id', 'cwe_id']).index.is_unique, \
-            'Primary keys are not unique in cwe_classification records!'
-        assert set(list(df_cwes_class.cwe_id)).issubset(set(list(df_cwes.cwe_id))), \
-            'Not all foreign keys for the cwe_classification records are present in the cwe table!'
-
-        df_cwes = df_cwes[cwe_columns].reset_index()  # to maintain the order of the columns
-        df_cwes.to_sql(name="cwe", con=db.conn, if_exists='replace', index=False)
-        df_cwes_class.to_sql(name='cwe_classification', con=db.conn, if_exists='replace', index=False)
-        cf.logger.info('Added cwe and cwe_classification tables')
-
-        # --------------------------------------------------------------------------------------------------------
+        associate_cves_to_cwes(df_cve=df_cve)
