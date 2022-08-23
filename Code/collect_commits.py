@@ -7,77 +7,19 @@ import pandas as pd
 import configuration as cf
 from guesslang import Guess
 from pydriller import Repository
+
+from constants import FIXES_COLUMNS, COMMIT_COLUMNS, FILE_COLUMNS, METHOD_COLUMNS
 from utils import log_commit_urls
 
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-
-fixes_columns = [
-    'cve_id',
-    'hash',
-    'repo_url',
-]
-
-commit_columns = [
-    'hash',
-    'repo_url',
-    'author',
-    'author_date',
-    'author_timezone',
-    'committer',
-    'committer_date',
-    'committer_timezone',
-    'msg',
-    'merge',
-    'parents',
-    'num_lines_added',
-    'num_lines_deleted',
-    'dmm_unit_complexity',
-    'dmm_unit_interfacing',
-    'dmm_unit_size'
-]
-
-file_columns = [
-    'file_change_id',
-    'hash',
-    'filename',
-    'old_path',
-    'new_path',
-    'change_type',
-    'diff',
-    'diff_parsed',
-    'num_lines_added',
-    'num_lines_deleted',
-    'code_after',
-    'code_before',
-    'nloc',
-    'complexity',
-    'token_count',
-    'programming_language'
-]
-
-method_columns = [
-    'method_change_id',
-    'file_change_id',
-    'name',
-    'signature',
-    'parameters',
-    'start_line',
-    'end_line',
-    'code',
-    'nloc',
-    'complexity',
-    'token_count',
-    'top_nesting_level',
-    'before_change',
-]
 
 
 def extract_project_links(df_master):
     """
     extracts all the reference urls from CVE records that match to the repo commit urls
     """
-    df_fixes = pd.DataFrame(columns=fixes_columns)
+    df_fixes = pd.DataFrame(columns=FIXES_COLUMNS)
     git_url = r'(((?P<repo>(https|http):\/\/(bitbucket|github|gitlab)\.(org|com)\/(?P<owner>[^\/]+)\/(?P<project>[^\/]*))\/(commit|commits)\/(?P<hash>\w+)#?)+)'
     cf.logger.info('-' * 70)
     cf.logger.info('Extracting all reference URLs from CVEs...')
@@ -357,19 +299,19 @@ def extract_commits(repo_url, hashes):
 
     if repo_commits:
         df_repo_commits = pd.DataFrame.from_dict(repo_commits)
-        df_repo_commits = df_repo_commits[commit_columns]  # ordering the columns
+        df_repo_commits = df_repo_commits[COMMIT_COLUMNS]  # ordering the columns
     else:
         df_repo_commits = None
 
     if repo_files:
         df_repo_files = pd.DataFrame.from_dict(repo_files)
-        df_repo_files = df_repo_files[file_columns]  # ordering the columns
+        df_repo_files = df_repo_files[FILE_COLUMNS]  # ordering the columns
     else:
         df_repo_files = None
 
     if repo_methods:
         df_repo_methods = pd.DataFrame.from_dict(repo_methods)
-        df_repo_methods = df_repo_methods[method_columns]  # ordering the
+        df_repo_methods = df_repo_methods[METHOD_COLUMNS]  # ordering the
     else:
         df_repo_methods = None
 

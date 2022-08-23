@@ -9,20 +9,8 @@ import configuration as cf
 import database as db
 from collect_commits import extract_commits, extract_project_links
 import cve_importer
+from constants import REPO_COLUMNS
 from utils import prune_tables
-
-repo_columns = [
-    'repo_url',
-    'repo_name',
-    'description',
-    'date_created',
-    'date_last_push',
-    'homepage',
-    'repo_language',
-    'owner',
-    'forks_count',
-    'stars_count'
-]
 
 
 def find_unavailable_urls(urls):
@@ -148,7 +136,7 @@ def save_repo_meta(repo_url):
     if 'github.' in repo_url:
         try:
             meta_dict = get_github_meta(repo_url, cf.USER, cf.TOKEN)
-            df_meta = pd.DataFrame([meta_dict], columns=repo_columns)
+            df_meta = pd.DataFrame([meta_dict], columns=REPO_COLUMNS)
 
             if db.table_exists('repository'):
                 # ignore when the meta-information of the given repo is already saved.

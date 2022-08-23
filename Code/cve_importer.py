@@ -14,38 +14,20 @@ from pathlib import Path
 from zipfile import ZipFile
 from pandas import json_normalize
 
+from constants import URL_HEAD, URL_TAIL, INIT_YEAR, ORDERED_CVE_COLUMNS, CWE_COLUMNS, DROP_CVE_COLUMNS
 from extract_cwe_record import add_cwe_class,  extract_cwe
 import configuration as cf
 import database as db
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-urlhead = 'https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-'
-urltail = '.json.zip'
-initYear = 2002
 currentYear = datetime.datetime.now().year
 
 # Consider only current year CVE records when sample_limit>0 for the simplified example.
 if cf.SAMPLE_LIMIT > 0:
-    initYear = currentYear
+    INIT_YEAR = currentYear
 
 df = pd.DataFrame()
-
-ordered_cve_columns = ['cve_id', 'published_date', 'last_modified_date', 'description', 'nodes', 'severity',
-                       'obtain_all_privilege', 'obtain_user_privilege', 'obtain_other_privilege',
-                       'user_interaction_required',
-                       'cvss2_vector_string', 'cvss2_access_vector', 'cvss2_access_complexity', 'cvss2_authentication',
-                       'cvss2_confidentiality_impact', 'cvss2_integrity_impact', 'cvss2_availability_impact',
-                       'cvss2_base_score',
-                       'cvss3_vector_string', 'cvss3_attack_vector', 'cvss3_attack_complexity',
-                       'cvss3_privileges_required',
-                       'cvss3_user_interaction', 'cvss3_scope', 'cvss3_confidentiality_impact',
-                       'cvss3_integrity_impact',
-                       'cvss3_availability_impact', 'cvss3_base_score', 'cvss3_base_severity',
-                       'exploitability_score', 'impact_score', 'ac_insuf_info',
-                       'reference_json', 'problemtype_json']
-
-cwe_columns = ['cwe_id', 'cwe_name', 'description', 'extended_description', 'url', 'is_category']
 
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -74,31 +56,13 @@ def preprocess_jsons(df_in):
 
     # Re-ordering and filtering some redundant and unnecessary columns
     df_cve = df_cve.rename(columns={'cve.CVE_data_meta.ID': 'cve_id'})
-    df_cve = df_cve.drop(
-        labels=[
-            'index',
-            'CVE_Items',
-            'cve.data_type',
-            'cve.data_format',
-            'cve.data_version',
-            'CVE_data_type',
-            'CVE_data_format',
-            'CVE_data_version',
-            'CVE_data_numberOfCVEs',
-            'CVE_data_timestamp',
-            'cve.CVE_data_meta.ASSIGNER',
-            'configurations.CVE_data_version',
-            'impact.baseMetricV2.cvssV2.version',
-            'impact.baseMetricV2.exploitabilityScore',
-            'impact.baseMetricV2.impactScore',
-            'impact.baseMetricV3.cvssV3.version',
-        ], axis=1, errors='ignore')
+    df_cve = df_cve.drop(labels=DROP_CVE_COLUMNS, axis=1, errors='ignore')
 
     # renaming the column names
     df_cve.columns = [rename_columns(i) for i in df_cve.columns]
 
     # ordering the cve columns
-    df_cve = df_cve[ordered_cve_columns]
+    df_cve = df_cve[ORDERED_CVE_COLUMNS]
 
     return df_cve
 
@@ -128,7 +92,7 @@ def assign_cwes_to_cves(df_cve: pd.DataFrame):
     assert set(list(df_cwes_class.cwe_id)).issubset(set(list(df_cwes.cwe_id))), \
         'Not all foreign keys for the cwe_classification records are present in the cwe table!'
 
-    df_cwes = df_cwes[cwe_columns].reset_index()  # to maintain the order of the columns
+    df_cwes = df_cwes[CWE_COLUMNS].reset_index()  # to maintain the order of the columns
     df_cwes.to_sql(name="cwe", con=db.conn, if_exists='replace', index=False)
     df_cwes_class.to_sql(name='cwe_classification', con=db.conn, if_exists='replace', index=False)
     cf.logger.info('Added cwe and cwe_classification tables')
@@ -143,9 +107,9 @@ def import_cves():
         cf.logger.warning('The cve table already exists, loading and continuing extraction...')
         # df_cve = pd.read_sql(sql="SELECT * FROM cve", con=db.conn)
     else:
-        for year in range(initYear, currentYear + 1):
+        for year in range(INIT_YEAR, currentYear + 1):
             extract_target = 'nvdcve-1.1-' + str(year) + '.json'
-            zip_file_url = urlhead + str(year) + urltail
+            zip_file_url = URL_HEAD + str(year) + URL_TAIL
 
             # Check if the directory already has the json file or not ?
             if os.path.isfile(Path(cf.DATA_PATH) / 'json' / extract_target):
@@ -159,7 +123,7 @@ def import_cves():
 
             with open(json_file) as f:
                 yearly_data = json.load(f)
-                if year == initYear:  # initialize the df_methods by the first year data
+                if year == INIT_YEAR:  # initialize the df_methods by the first year data
                     df_cve = pd.DataFrame(yearly_data)
                 else:
                     df_cve = df_cve.append(pd.DataFrame(yearly_data))
