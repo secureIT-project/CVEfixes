@@ -162,19 +162,18 @@ def get_methods(file, file_change_id):
         if file.changed_methods:
             cf.logger.debug('-' * 70)
             cf.logger.debug('methods_after: ')
-            cf.logger.debug('- ' * 35)
             for m in file.methods:
                 if m.name != '(anonymous)':
                     cf.logger.debug(m.long_name)
 
-            cf.logger.debug('methods_before: ')
             cf.logger.debug('- ' * 35)
+            cf.logger.debug('methods_before: ')
             for mb in file.methods_before:
                 if mb.name != '(anonymous)':
                     cf.logger.debug(mb.long_name)
 
-            cf.logger.debug('changed_methods: ')
             cf.logger.debug('- ' * 35)
+            cf.logger.debug('changed_methods: ')
             for mc in file.changed_methods:
                 if mc.name != '(anonymous)':
                     cf.logger.debug(mc.long_name)
@@ -194,7 +193,6 @@ def get_methods(file, file_change_id):
                         # Since, we did some manual test, (anonymous) function are not function code.
                         # They are also not listed in the changed functions.
                         if file.source_code_before is not None and mb.name != '(anonymous)':
-                            # method_before_code = ('\n'.join(file.source_code_before.split('\n')[int(mb.start_line) - 1: int(mb.end_line)]))
                             method_before_code = get_method_code(file.source_code_before, mb.start_line, mb.end_line)
                             method_before_row = {
                                 'method_change_id': uuid.uuid4().fields[-1],

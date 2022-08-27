@@ -11,7 +11,6 @@ from collect_commits import extract_commits, extract_project_links
 import cve_importer
 from utils import prune_tables
 
-
 repo_columns = [
     'repo_url',
     'repo_name',
@@ -26,28 +25,34 @@ repo_columns = [
 ]
 
 
-def filter_urls(urls):
+def find_unavailable_urls(urls):
     """
-    returns the non-existing urls
+    returns the unavailable urls (repositories that are removed or made private)
     """
     sleeptime = 0
-    non_exist_urls = []
+    unavailable_urls = []
     for url in urls:
-        code = requests.head(url).status_code
+        response = requests.head(url)
 
         # wait while sending too many requests (increasing timeout on every iteration)
-        while code == 429:
+        while response.status_code == 429:
             sleeptime += 10
             time.sleep(sleeptime)
-            code = requests.head(url).status_code
-
-        if code >= 400:
-            cf.logger.debug(f'Reference { url } is not not accessible with code: { code }')
-            non_exist_urls.append(url)
-
+            response = requests.head(url)
         sleeptime = 0
 
-    return non_exist_urls
+        # GitLab responds to unavailable repositories by redirecting to their login page.
+        # This code is a bit brittle with a hardcoded URL but we want to allow for projects
+        # that are redirected due to renaming or transferal to new owners...
+        if (response.status_code >= 400) or \
+                (response.is_redirect and
+                 response.headers['location'] == 'https://gitlab.com/users/sign_in'):
+            cf.logger.debug(f'Reference {url} is not available with code: {response.status_code}')
+            unavailable_urls.append(url)
+        else:
+            cf.logger.debug(f'Reference {url} is available with code: {response.status_code}')
+
+    return unavailable_urls
 
 
 def convert_runtime(start_time, end_time) -> (int, int, int):
@@ -55,8 +60,8 @@ def convert_runtime(start_time, end_time) -> (int, int, int):
     converts runtime of the slice of code more readable format
     """
     runtime = end_time - start_time
-    hours = runtime/3600
-    minutes = (runtime % 3600)/60
+    hours = runtime / 3600
+    minutes = (runtime % 3600) / 60
     seconds = (runtime % 3600) % 60
     return floor(hours), floor(minutes), round(seconds)
 
@@ -78,14 +83,15 @@ def get_ref_links():
         cf.logger.info('Checking if the references are still accessible...')
         unique_urls = set(list(df_fixes.repo_url))
 
-        unavailable_urls = filter_urls(unique_urls)
+        unavailable_urls = find_unavailable_urls(unique_urls)
 
         if len(unavailable_urls) > 0:
-            cf.logger.debug(f'Of { len(unique_urls) } unique references, { len(unavailable_urls) } are not accessible')
+            cf.logger.debug(f'Of {len(unique_urls)} unique references, {len(unavailable_urls)} are not accessible')
 
         # filtering out non-existing repo_urls
         df_fixes = df_fixes[~df_fixes['repo_url'].isin(unavailable_urls)]
-        cf.logger.debug(f'After filtering, {len(df_fixes)} references remain ({ len(set(list(df_fixes.repo_url))) } unique)')
+        cf.logger.debug(
+            f'After filtering, {len(df_fixes)} references remain ({len(set(list(df_fixes.repo_url)))} unique)')
 
         if cf.SAMPLE_LIMIT > 0:
             # filtering out some of the major projects that would take a long time for a simplified example database.
@@ -222,7 +228,8 @@ def store_tables(df_fixes):
         method_count = str(pd.read_sql("SELECT count(*) from method_change;", con=db.conn).iloc[0].iloc[0])
         cf.logger.debug(f'Number of total methods fetched by all the commits: {method_count}')
 
-        vul_method_count = pd.read_sql('SELECT count(*) from method_change WHERE before_change="True";', con=db.conn).iloc[0].iloc[0]
+        vul_method_count = \
+        pd.read_sql('SELECT count(*) from method_change WHERE before_change="True";', con=db.conn).iloc[0].iloc[0]
         cf.logger.debug(f"Number of vulnerable methods fetched by all the commits: {vul_method_count}")
     else:
         cf.logger.warning('The method_change table does not exist')
@@ -232,7 +239,7 @@ def store_tables(df_fixes):
 
 # ---------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
-    print(filter_urls([]))
+    print(find_unavailable_urls([]))
     start_time = time.perf_counter()
     # Step (1) save CVEs(cve) and cwe tables
     cve_importer.import_cves()
