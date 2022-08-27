@@ -25,8 +25,8 @@ def extract_cwe():
         cf.logger.info('Reusing the CWE XML file that is already in the directory')
         xtree = et.parse(cf.DATA_PATH + cwe_doc[-1])
     else:
-        cwe_csv_url = 'https://cwe.mitre.org/data/xml/cwec_latest.xml.zip'
-        cwe_zip = ZipFile(BytesIO(urlopen(cwe_csv_url).read()))
+        cwe_url = 'https://cwe.mitre.org/data/xml/cwec_latest.xml.zip'
+        cwe_zip = ZipFile(BytesIO(urlopen(cwe_url).read()))
         cwe_doc = sorted(fnmatch.filter(cwe_zip.namelist(),'cwec_*.xml'))  # assumes all files at top level
         assert len(cwe_doc) > 0, \
             'Cannot find a CWE XML file in https://cwe.mitre.org/data/xml/cwec_latest.xml.zip'
