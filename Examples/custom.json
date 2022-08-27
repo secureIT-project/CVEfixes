@@ -1,0 +1,541 @@
+{
+    "CVE_Items":
+    [{
+	"cve": {
+	    "data_type": "CVE",
+	    "data_format": "MITRE",
+	    "data_version": "4.0",
+	    "CVE_data_meta": {
+		"ID": "CVE-2016-9964",
+		"ASSIGNER": "cve@mitre.org"
+	    },
+	    "problemtype": {
+		"problemtype_data": [
+		    {
+			"description": [
+			    {
+				"lang": "en",
+				"value": "CWE-93"
+			    }
+			]
+		    }
+		]
+	    },
+	    "references": {
+		"reference_data": [
+		    {
+			"url": "https://github.com/bottlepy/bottle/issues/913",
+			"name": "https://github.com/bottlepy/bottle/issues/913",
+			"refsource": "CONFIRM",
+			"tags": [
+			    "Issue Tracking",
+			    "Patch",
+			    "Third Party Advisory"
+			]
+		    },
+		    {
+			"url": "https://github.com/bottlepy/bottle/commit/6d7e13da0f998820800ecb3fe9ccee4189aefb54",
+			"name": "https://github.com/bottlepy/bottle/commit/6d7e13da0f998820800ecb3fe9ccee4189aefb54",
+			"refsource": "CONFIRM",
+			"tags": [
+			    "Issue Tracking",
+			    "Patch",
+			    "Third Party Advisory"
+			]
+		    },
+		    {
+			"url": "http://www.securityfocus.com/bid/94961",
+			"name": "94961",
+			"refsource": "BID",
+			"tags": [
+			    "Third Party Advisory",
+			    "VDB Entry"
+			]
+		    },
+		    {
+			"url": "http://www.debian.org/security/2016/dsa-3743",
+			"name": "DSA-3743",
+			"refsource": "DEBIAN",
+			"tags": [
+			    "Third Party Advisory"
+			]
+		    }
+		]
+	    },
+	    "description": {
+		"description_data": [
+		    {
+			"lang": "en",
+			"value": "redirect() in bottle.py in bottle 0.12.10 doesn't filter a \"\\r\\n\" sequence, which leads to a CRLF attack, as demonstrated by a redirect(\"233\\r\\nSet-Cookie: name=salt\") call."
+		    }
+		]
+	    }
+	},
+	"configurations": {
+	    "CVE_data_version": "4.0",
+	    "nodes": [
+		{
+		    "operator": "OR",
+		    "children": [],
+		    "cpe_match": [
+			{
+			    "vulnerable": true,
+			    "cpe23Uri": "cpe:2.3:a:bottlepy:bottle:0.12.10:*:*:*:*:*:*:*",
+			    "cpe_name": []
+			}
+		    ]
+		},
+		{
+		    "operator": "OR",
+		    "children": [],
+		    "cpe_match": [
+			{
+			    "vulnerable": true,
+			    "cpe23Uri": "cpe:2.3:o:debian:debian_linux:8.0:*:*:*:*:*:*:*",
+			    "cpe_name": []
+			}
+		    ]
+		}
+	    ]
+	},
+	"impact": {
+	    "baseMetricV3": {
+		"cvssV3": {
+		    "version": "3.0",
+		    "vectorString": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:H/A:N",
+		    "attackVector": "NETWORK",
+		    "attackComplexity": "LOW",
+		    "privilegesRequired": "NONE",
+		    "userInteraction": "REQUIRED",
+		    "scope": "UNCHANGED",
+		    "confidentialityImpact": "NONE",
+		    "integrityImpact": "HIGH",
+		    "availabilityImpact": "NONE",
+		    "baseScore": 6.5,
+		    "baseSeverity": "MEDIUM"
+		},
+		"exploitabilityScore": 2.8,
+		"impactScore": 3.6
+	    },
+	    "baseMetricV2": {
+		"cvssV2": {
+		    "version": "2.0",
+		    "vectorString": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
+		    "accessVector": "NETWORK",
+		    "accessComplexity": "MEDIUM",
+		    "authentication": "NONE",
+		    "confidentialityImpact": "NONE",
+		    "integrityImpact": "PARTIAL",
+		    "availabilityImpact": "NONE",
+		    "baseScore": 4.3
+		},
+		"severity": "MEDIUM",
+		"exploitabilityScore": 8.6,
+		"impactScore": 2.9,
+		"obtainAllPrivilege": false,
+		"obtainUserPrivilege": false,
+		"obtainOtherPrivilege": false,
+		"userInteractionRequired": true
+	    }
+	},
+	"publishedDate": "2016-12-16T09:59Z",
+	"lastModifiedDate": "2017-01-11T03:00Z"
+    }, {
+	"cve" : {
+	    "data_type" : "CVE",
+	    "data_format" : "MITRE",
+	    "data_version" : "4.0",
+	    "CVE_data_meta" : {
+		"ID" : "CVE-2020-28473",
+		"ASSIGNER" : "report@snyk.io"
+	    },
+	    "problemtype" : {
+		"problemtype_data" : [ {
+		    "description" : [ {
+			"lang" : "en",
+			"value" : "CWE-444"
+		    } ]
+		} ]
+	    },
+	    "references" : {
+		"reference_data" : [ {
+		    "url" : "https://snyk.io/vuln/SNYK-PYTHON-BOTTLE-1017108",
+		    "name" : "https://snyk.io/vuln/SNYK-PYTHON-BOTTLE-1017108",
+		    "refsource" : "MISC",
+		    "tags" : [ "Exploit", "Third Party Advisory" ]
+		}, {
+		    "url" : "https://github.com/bottlepy/bottle",
+		    "name" : "https://github.com/bottlepy/bottle",
+		    "refsource" : "MISC",
+		    "tags" : [ "Product", "Third Party Advisory" ]
+		}, {
+		    "url" : "https://snyk.io/blog/cache-poisoning-in-popular-open-source-packages/",
+		    "name" : "https://snyk.io/blog/cache-poisoning-in-popular-open-source-packages/",
+		    "refsource" : "CONFIRM",
+		    "tags" : [ "Third Party Advisory" ]
+		}, {
+		    "url" : "https://lists.debian.org/debian-lts-announce/2021/01/msg00019.html",
+		    "name" : "[debian-lts-announce] 20210124 [SECURITY] [DLA 2531-1] python-bottle security update",
+		    "refsource" : "MLIST",
+		    "tags" : [ "Third Party Advisory" ]
+		} ]
+	    },
+	    "description" : {
+		"description_data" : [ {
+		    "lang" : "en",
+		    "value" : "The package bottle from 0 and before 0.12.19 are vulnerable to Web Cache Poisoning by using a vector called parameter cloaking. When the attacker can separate query parameters using a semicolon (;), they can cause a difference in the interpretation of the request between the proxy (running with default configuration) and the server. This can result in malicious requests being cached as completely safe ones, as the proxy would usually not see the semicolon as a separator, and therefore would not include it in a cache key of an unkeyed parameter."
+		} ]
+	    }
+	},
+	"configurations" : {
+	    "CVE_data_version" : "4.0",
+	    "nodes" : [ {
+		"operator" : "OR",
+		"children" : [ ],
+		"cpe_match" : [ {
+		    "vulnerable" : true,
+		    "cpe23Uri" : "cpe:2.3:a:bottlepy:bottle:*:*:*:*:*:*:*:*",
+		    "versionEndExcluding" : "0.12.19",
+		    "cpe_name" : [ ]
+		} ]
+	    }, {
+		"operator" : "OR",
+		"children" : [ ],
+		"cpe_match" : [ {
+		    "vulnerable" : true,
+		    "cpe23Uri" : "cpe:2.3:o:debian:debian_linux:9.0:*:*:*:*:*:*:*",
+		    "cpe_name" : [ ]
+		} ]
+	    } ]
+	},
+	"impact" : {
+	    "baseMetricV3" : {
+		"cvssV3" : {
+		    "version" : "3.1",
+		    "vectorString" : "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:N/I:H/A:H",
+		    "attackVector" : "NETWORK",
+		    "attackComplexity" : "HIGH",
+		    "privilegesRequired" : "NONE",
+		    "userInteraction" : "REQUIRED",
+		    "scope" : "UNCHANGED",
+		    "confidentialityImpact" : "NONE",
+		    "integrityImpact" : "HIGH",
+		    "availabilityImpact" : "HIGH",
+		    "baseScore" : 6.8,
+		    "baseSeverity" : "MEDIUM"
+		},
+		"exploitabilityScore" : 1.6,
+		"impactScore" : 5.2
+	    },
+	    "baseMetricV2" : {
+		"cvssV2" : {
+		    "version" : "2.0",
+		    "vectorString" : "AV:N/AC:M/Au:N/C:P/I:P/A:N",
+		    "accessVector" : "NETWORK",
+		    "accessComplexity" : "MEDIUM",
+		    "authentication" : "NONE",
+		    "confidentialityImpact" : "PARTIAL",
+		    "integrityImpact" : "PARTIAL",
+		    "availabilityImpact" : "NONE",
+		    "baseScore" : 5.8
+		},
+		"severity" : "MEDIUM",
+		"exploitabilityScore" : 8.6,
+		"impactScore" : 4.9,
+		"acInsufInfo" : false,
+		"obtainAllPrivilege" : false,
+		"obtainUserPrivilege" : false,
+		"obtainOtherPrivilege" : false,
+		"userInteractionRequired" : true
+	    }
+	},
+	"publishedDate" : "2021-01-18T12:15Z",
+	"lastModifiedDate" : "2021-01-28T15:57Z"
+    },{
+	"cve" : {
+	    "data_type" : "CVE",
+	    "data_format" : "MITRE",
+	    "data_version" : "4.0",
+	    "CVE_data_meta" : {
+		"ID" : "CVE-2022-31799",
+		"ASSIGNER" : "cve@mitre.org"
+	    },
+	    "problemtype" : {
+		"problemtype_data" : [ {
+		    "description" : [ {
+			"lang" : "en",
+			"value" : "CWE-755"
+		    } ]
+		} ]
+	    },
+	    "references" : {
+		"reference_data" : [ {
+		    "url" : "https://github.com/bottlepy/bottle/compare/0.12.19...0.12.20",
+		    "name" : "https://github.com/bottlepy/bottle/compare/0.12.19...0.12.20",
+		    "refsource" : "MISC",
+		    "tags" : [ "Third Party Advisory" ]
+		}, {
+		    "url" : "https://github.com/bottlepy/bottle/commit/e140e1b54da721a660f2eb9d58a106b7b3ff2f00",
+		    "name" : "https://github.com/bottlepy/bottle/commit/e140e1b54da721a660f2eb9d58a106b7b3ff2f00",
+		    "refsource" : "MISC",
+		    "tags" : [ "Patch", "Third Party Advisory" ]
+		}, {
+		    "url" : "https://github.com/bottlepy/bottle/commit/a2b0ee6bb4ce88895429ec4aca856616244c4c4c",
+		    "name" : "https://github.com/bottlepy/bottle/commit/a2b0ee6bb4ce88895429ec4aca856616244c4c4c",
+		    "refsource" : "MISC",
+		    "tags" : [ "Patch", "Third Party Advisory" ]
+		}, {
+		    "url" : "https://lists.debian.org/debian-lts-announce/2022/06/msg00010.html",
+		    "name" : "[debian-lts-announce] 20220608 [SECURITY] [DLA 3048-1] python-bottle security update",
+		    "refsource" : "MLIST",
+		    "tags" : [ "Mailing List", "Third Party Advisory" ]
+		}, {
+		    "url" : "https://www.debian.org/security/2022/dsa-5159",
+		    "name" : "DSA-5159",
+		    "refsource" : "DEBIAN",
+		    "tags" : [ "Mailing List", "Third Party Advisory" ]
+		}, {
+		    "url" : "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IE7U6J45PUEXIYYVWJKPM6QXIRKDK4HD/",
+		    "name" : "FEDORA-2022-c1e107f37f",
+		    "refsource" : "FEDORA",
+		    "tags" : [ ]
+		}, {
+		    "url" : "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/KTLOQGMDZEPIYTFC2G53OQV2ULCGYS3F/",
+		    "name" : "FEDORA-2022-cc9a173168",
+		    "refsource" : "FEDORA",
+		    "tags" : [ ]
+		} ]
+	    },
+	    "description" : {
+		"description_data" : [ {
+		    "lang" : "en",
+		    "value" : "Bottle before 0.12.20 mishandles errors during early request binding."
+		} ]
+	    }
+	},
+	"configurations" : {
+	    "CVE_data_version" : "4.0",
+	    "nodes" : [ {
+		"operator" : "OR",
+		"children" : [ ],
+		"cpe_match" : [ {
+		    "vulnerable" : true,
+		    "cpe23Uri" : "cpe:2.3:a:bottlepy:bottle:*:*:*:*:*:*:*:*",
+		    "versionEndExcluding" : "0.12.20",
+		    "cpe_name" : [ ]
+		} ]
+	    }, {
+		"operator" : "OR",
+		"children" : [ ],
+		"cpe_match" : [ {
+		    "vulnerable" : true,
+		    "cpe23Uri" : "cpe:2.3:o:debian:debian_linux:9.0:*:*:*:*:*:*:*",
+		    "cpe_name" : [ ]
+		}, {
+		    "vulnerable" : true,
+		    "cpe23Uri" : "cpe:2.3:o:debian:debian_linux:10.0:*:*:*:*:*:*:*",
+		    "cpe_name" : [ ]
+		}, {
+		    "vulnerable" : true,
+		    "cpe23Uri" : "cpe:2.3:o:debian:debian_linux:11.0:*:*:*:*:*:*:*",
+		    "cpe_name" : [ ]
+		} ]
+	    } ]
+	},
+	"impact" : {
+	    "baseMetricV3" : {
+		"cvssV3" : {
+		    "version" : "3.1",
+		    "vectorString" : "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+		    "attackVector" : "NETWORK",
+		    "attackComplexity" : "LOW",
+		    "privilegesRequired" : "NONE",
+		    "userInteraction" : "NONE",
+		    "scope" : "UNCHANGED",
+		    "confidentialityImpact" : "HIGH",
+		    "integrityImpact" : "HIGH",
+		    "availabilityImpact" : "HIGH",
+		    "baseScore" : 9.8,
+		    "baseSeverity" : "CRITICAL"
+		},
+		"exploitabilityScore" : 3.9,
+		"impactScore" : 5.9
+	    },
+	    "baseMetricV2" : {
+		"cvssV2" : {
+		    "version" : "2.0",
+		    "vectorString" : "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+		    "accessVector" : "NETWORK",
+		    "accessComplexity" : "LOW",
+		    "authentication" : "NONE",
+		    "confidentialityImpact" : "PARTIAL",
+		    "integrityImpact" : "PARTIAL",
+		    "availabilityImpact" : "PARTIAL",
+		    "baseScore" : 7.5
+		},
+		"severity" : "HIGH",
+		"exploitabilityScore" : 10.0,
+		"impactScore" : 6.4,
+		"acInsufInfo" : false,
+		"obtainAllPrivilege" : false,
+		"obtainUserPrivilege" : false,
+		"obtainOtherPrivilege" : false,
+		"userInteractionRequired" : false
+	    }
+	},
+	"publishedDate" : "2022-06-02T14:15Z",
+	"lastModifiedDate" : "2022-06-22T03:15Z"
+    }, {
+	"cve" : {
+	    "data_type" : "CVE",
+	    "data_format" : "MITRE",
+	    "data_version" : "4.0",
+	    "CVE_data_meta" : {
+		"ID" : "CVE-2008-5619",
+		"ASSIGNER" : "cve@mitre.org"
+	    },
+	    "problemtype" : {
+		"problemtype_data" : [ {
+		    "description" : [ {
+			"lang" : "en",
+			"value" : "CWE-94"
+		    } ]
+		} ]
+	    },
+	    "references" : {
+		"reference_data" : [ {
+		    "url" : "http://sourceforge.net/forum/forum.php?forum_id=898542",
+		    "name" : "http://sourceforge.net/forum/forum.php?forum_id=898542",
+		    "refsource" : "CONFIRM",
+		    "tags" : [ "Vendor Advisory" ]
+		}, {
+		    "url" : "https://www.redhat.com/archives/fedora-package-announce/2008-December/msg00802.html",
+		    "name" : "FEDORA-2008-11234",
+		    "refsource" : "FEDORA",
+		    "tags" : [ ]
+		}, {
+		    "url" : "http://trac.roundcube.net/changeset/2148",
+		    "name" : "http://trac.roundcube.net/changeset/2148",
+		    "refsource" : "CONFIRM",
+		    "tags" : [ "Exploit" ]
+		}, {
+		    "url" : "http://www.openwall.com/lists/oss-security/2008/12/12/1",
+		    "name" : "[oss-security] 20081212 CVE Request - roundcubemail",
+		    "refsource" : "MLIST",
+		    "tags" : [ ]
+		}, {
+		    "url" : "http://secunia.com/advisories/33170",
+		    "name" : "33170",
+		    "refsource" : "SECUNIA",
+		    "tags" : [ "Vendor Advisory" ]
+		}, {
+		    "url" : "https://www.redhat.com/archives/fedora-package-announce/2008-December/msg00783.html",
+		    "name" : "FEDORA-2008-11220",
+		    "refsource" : "FEDORA",
+		    "tags" : [ ]
+		}, {
+		    "url" : "http://trac.roundcube.net/ticket/1485618",
+		    "name" : "http://trac.roundcube.net/ticket/1485618",
+		    "refsource" : "MISC",
+		    "tags" : [ "Exploit" ]
+		}, {
+		    "url" : "http://secunia.com/advisories/33145",
+		    "name" : "33145",
+		    "refsource" : "SECUNIA",
+		    "tags" : [ ]
+		}, {
+		    "url" : "http://secunia.com/advisories/34789",
+		    "name" : "34789",
+		    "refsource" : "SECUNIA",
+		    "tags" : [ ]
+		}, {
+		    "url" : "http://mahara.org/interaction/forum/topic.php?id=533",
+		    "name" : "http://mahara.org/interaction/forum/topic.php?id=533",
+		    "refsource" : "CONFIRM",
+		    "tags" : [ ]
+		}, {
+		    "url" : "http://osvdb.org/53893",
+		    "name" : "53893",
+		    "refsource" : "OSVDB",
+		    "tags" : [ ]
+		}, {
+		    "url" : "http://www.vupen.com/english/advisories/2008/3419",
+		    "name" : "ADV-2008-3419",
+		    "refsource" : "VUPEN",
+		    "tags" : [ ]
+		}, {
+		    "url" : "http://www.vupen.com/english/advisories/2008/3418",
+		    "name" : "ADV-2008-3418",
+		    "refsource" : "VUPEN",
+		    "tags" : [ ]
+		}, {
+		    "url" : "https://github.com/PHPMailer/PHPMailer/commit/8beacc646acb67c995aea10ac5585970efc7355a",
+		    "name" : "https://github.com/PHPMailer/PHPMailer/commit/8beacc646acb67c995aea10ac5585970efc7355a",
+		    "refsource" : "CONFIRM",
+		    "tags" : [ ]
+		}, {
+		    "url" : "https://www.exploit-db.com/exploits/7553",
+		    "name" : "7553",
+		    "refsource" : "EXPLOIT-DB",
+		    "tags" : [ ]
+		}, {
+		    "url" : "https://www.exploit-db.com/exploits/7549",
+		    "name" : "7549",
+		    "refsource" : "EXPLOIT-DB",
+		    "tags" : [ ]
+		}, {
+		    "url" : "http://www.securityfocus.com/archive/1/499489/100/0/threaded",
+		    "name" : "20081222 POC for CVE-2008-5619 (roundcubemail PHP arbitrary code injection)",
+		    "refsource" : "BUGTRAQ",
+		    "tags" : [ ]
+		} ]
+	    },
+	    "description" : {
+		"description_data" : [ {
+		    "lang" : "en",
+		    "value" : "html2text.php in Chuggnutt HTML to Text Converter, as used in PHPMailer before 5.2.10, RoundCube Webmail (roundcubemail) 0.2-1.alpha and 0.2-3.beta, Mahara, and AtMail Open 1.03, allows remote attackers to execute arbitrary code via crafted input that is processed by the preg_replace function with the eval switch."
+		} ]
+	    }
+	},
+	"configurations" : {
+	    "CVE_data_version" : "4.0",
+	    "nodes" : [ {
+		"operator" : "OR",
+		"children" : [ ],
+		"cpe_match" : [ {
+		    "vulnerable" : true,
+		    "cpe23Uri" : "cpe:2.3:a:roundcube:webmail:0.2.1:alpha:*:*:*:*:*:*",
+		    "cpe_name" : [ ]
+		}, {
+		    "vulnerable" : true,
+		    "cpe23Uri" : "cpe:2.3:a:roundcube:webmail:0.2.3:beta:*:*:*:*:*:*",
+		    "cpe_name" : [ ]
+		} ]
+	    } ]
+	},
+	"impact" : {
+	    "baseMetricV2" : {
+		"cvssV2" : {
+		    "version" : "2.0",
+		    "vectorString" : "AV:N/AC:L/Au:N/C:C/I:C/A:C",
+		    "accessVector" : "NETWORK",
+		    "accessComplexity" : "LOW",
+		    "authentication" : "NONE",
+		    "confidentialityImpact" : "COMPLETE",
+		    "integrityImpact" : "COMPLETE",
+		    "availabilityImpact" : "COMPLETE",
+		    "baseScore" : 10.0
+		},
+		"severity" : "HIGH",
+		"exploitabilityScore" : 10.0,
+		"impactScore" : 10.0,
+		"obtainAllPrivilege" : true,
+		"obtainUserPrivilege" : false,
+		"obtainOtherPrivilege" : false,
+		"userInteractionRequired" : false
+	    }
+	},
+	"publishedDate" : "2008-12-17T02:30Z",
+	"lastModifiedDate" : "2018-10-11T20:56Z"
+    }]
+}
