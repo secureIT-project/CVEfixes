@@ -227,7 +227,6 @@ def store_tables(df_fixes):
 
 # ---------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
-    print(find_unavailable_urls([]))
     start_time = time.perf_counter()
     # Step (1) save CVEs(cve) and cwe tables
     cve_importer.import_cves()

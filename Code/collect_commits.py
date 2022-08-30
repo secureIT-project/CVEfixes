@@ -52,10 +52,6 @@ def guess_pl(code):
         return 'unknown'
 
 
-def clean_string(signature):
-    return signature.strip().replace(' ', '')
-
-
 def get_method_code(source_code, start_line, end_line):
     try:
         if source_code is not None:

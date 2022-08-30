@@ -32,17 +32,6 @@ def table_exists(table_name):
         return False
 
 
-def execute_sql_cmd(query):
-    cursor = conn.cursor()
-    cursor.execute(query)
-
-
-def execute_data_cmd(query, data):
-    cursor = conn.cursor()
-    cursor.execute(query, data)
-    conn.commit()
-
-
 def fetchone_query(table_name, col, value):
     """
     checks whether table exists or not

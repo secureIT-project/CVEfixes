@@ -27,8 +27,6 @@ currentYear = datetime.datetime.now().year
 if cf.SAMPLE_LIMIT > 0:
     INIT_YEAR = currentYear
 
-df = pd.DataFrame()
-
 # ---------------------------------------------------------------------------------------------------------------------
 
 

@@ -82,15 +82,6 @@ def extract_cwe():
     return df_cwe
 
 
-def parse_cwes(str1):
-    """
-    Converts string to list.
-    """
-    lst = ast.literal_eval(str1)
-    lst = [x.strip() for x in lst]
-    return lst
-
-
 def add_cwe_class(problem_col):
     """
     returns CWEs of the CVE.
