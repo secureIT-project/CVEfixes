@@ -39,23 +39,22 @@ def read_config() -> None:
     global DATA_PATH, DATABASE_NAME, DATABASE, USER, TOKEN, SAMPLE_LIMIT, NUM_WORKERS, LOGGING_LEVEL, config_read
 
     config = ConfigParser()
-    if config.read(['.CVEfixes.ini',
-                    Path.home() / '.config' / 'CVEfixes.ini',
-                    Path.home() / '.CVEfixes.ini']):
-        # try and update settings for each of the values, use
-        DATA_PATH = config.get('CVEfixes', 'database_path', fallback=DATA_PATH)
-        DATABASE_NAME = config.get('CVEfixes', 'database_name', fallback=DATABASE_NAME)
-        USER = config.get('GitHub', 'user', fallback=USER)
-        TOKEN = config.get('GitHub', 'token', fallback=TOKEN)
-        SAMPLE_LIMIT = config.getint('CVEfixes', 'sample_limit', fallback=SAMPLE_LIMIT)
-        NUM_WORKERS = config.getint('CVEfixes', 'num_workers', fallback=NUM_WORKERS)
-        Path(DATA_PATH).mkdir(parents=True, exist_ok=True)  # create the directory if not exists.
-        DATABASE = Path(DATA_PATH) / DATABASE_NAME
-        LOGGING_LEVEL = log_level_map.get(config.get('CVEfixes', 'logging_level', fallback='WARNING'), logging.WARNING)
-        config_read = True
-    else:
+    if not config.read(['.CVEfixes.ini',
+                        Path.home() / '.config' / 'CVEfixes.ini',
+                        Path.home() / '.CVEfixes.ini']):
         logger.warning('Cannot find CVEfixes config file in the working or $HOME directory, see INSTALL.md')
-        sys.exit()
+
+    # try and update settings for each of the values, use
+    DATA_PATH = config.get('CVEfixes', 'database_path', fallback=DATA_PATH)
+    DATABASE_NAME = config.get('CVEfixes', 'database_name', fallback=DATABASE_NAME)
+    USER = config.get('GitHub', 'user', fallback=USER)
+    TOKEN = config.get('GitHub', 'token', fallback=TOKEN)
+    SAMPLE_LIMIT = config.getint('CVEfixes', 'sample_limit', fallback=SAMPLE_LIMIT)
+    NUM_WORKERS = config.getint('CVEfixes', 'num_workers', fallback=NUM_WORKERS)
+    Path(DATA_PATH).mkdir(parents=True, exist_ok=True)  # create the directory if not exists.
+    DATABASE = Path(DATA_PATH) / DATABASE_NAME
+    LOGGING_LEVEL = log_level_map.get(config.get('CVEfixes', 'logging_level', fallback='WARNING'), logging.WARNING)
+    config_read = True
 
 
 if not config_read:

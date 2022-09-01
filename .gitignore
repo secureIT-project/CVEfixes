@@ -1,3 +1,11 @@
 .CVEfixes.ini
+Data/
 CVEfixes*.db
 CVEfixes*.sql.gz
+
+*.pytest_cache*
+*.idea/
+
+.hypothesis/
+htmlcov/
+.coverage
