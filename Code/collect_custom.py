@@ -8,7 +8,7 @@ import pandas as pd
 
 import configuration as cf
 import database as db
-from collect_projects import convert_runtime, store_tables, get_ref_links
+from collect_projects import convert_runtime, fetch_and_store_commits, populate_fixes_table
 from cve_importer import preprocess_jsons, assign_cwes_to_cves
 from utils import prune_tables
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     assign_cwes_to_cves(df_cve)
 
     # 3. Save commit-, file-, and method- level data tables to the database
-    store_tables(get_ref_links())
+    fetch_and_store_commits(populate_fixes_table())
 
     # 4. Pruning the database tables
     if db.table_exists('method_change'):

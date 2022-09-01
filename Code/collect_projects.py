@@ -1,14 +1,15 @@
-import pandas as pd
-import requests
 import time
 from math import floor
-from github import Github
+
+import pandas as pd
+import requests
+import github
 from github.GithubException import BadCredentialsException
 
 import configuration as cf
+import cve_importer
 import database as db
 from collect_commits import extract_commits, extract_project_links
-import cve_importer
 from constants import REPO_COLUMNS
 from utils import prune_tables
 
@@ -54,7 +55,7 @@ def convert_runtime(start_time, end_time) -> (int, int, int):
     return floor(hours), floor(minutes), round(seconds)
 
 
-def get_ref_links():
+def populate_fixes_table():
     """
     retrieves reference links from CVE records to populate 'fixes' table
     """
@@ -65,8 +66,8 @@ def get_ref_links():
         else:
             df_fixes = pd.read_sql("SELECT * FROM fixes", con=db.conn)
     else:
-        df_master = pd.read_sql("SELECT * FROM cve", con=db.conn)
-        df_fixes = extract_project_links(df_master)
+        df_cve_table = pd.read_sql("SELECT * FROM cve", con=db.conn)
+        df_fixes = extract_project_links(df_cve_table)
 
         cf.logger.info('Checking if the references are still accessible...')
         unique_urls = set(list(df_fixes.repo_url))
@@ -76,13 +77,13 @@ def get_ref_links():
         if len(unavailable_urls) > 0:
             cf.logger.debug(f'Of {len(unique_urls)} unique references, {len(unavailable_urls)} are not accessible')
 
-        # filtering out non-existing repo_urls
+        # filtering out unavailable repo_urls
         df_fixes = df_fixes[~df_fixes['repo_url'].isin(unavailable_urls)]
         cf.logger.debug(
-            f'After filtering, {len(df_fixes)} references remain ({len(set(list(df_fixes.repo_url)))} unique)')
+            f'After filtering out the unavailable links, {len(df_fixes)} references remain ({len(set(list(df_fixes.repo_url)))} unique)')
 
         if cf.SAMPLE_LIMIT > 0:
-            # filtering out some of the major projects that would take a long time for a simplified example database.
+            # filtering out some major projects that would take a long time for a simplified example database.
             df_fixes = df_fixes[~df_fixes.repo_url.isin(['https://github.com/torvalds/linux',
                                                          'https://github.com/ImageMagick/ImageMagick',
                                                          'https://github.com/the-tcpdump-group/tcpdump',
@@ -95,7 +96,7 @@ def get_ref_links():
     return df_fixes
 
 
-def get_github_meta(repo_url, username, token):
+def get_github_repo_meta(repo_url: str, username: str, token):
     """
     returns github meta-information of the repo_url
     """
@@ -103,9 +104,9 @@ def get_github_meta(repo_url, username, token):
     meta_row = {}
 
     if username == 'None':
-        git_link = Github()
+        git_link = github.Github()
     else:
-        git_link = Github(login_or_token=token, user_agent=username)
+        git_link = github.Github(login_or_token=token, user_agent=username)
 
     try:
         git_user = git_link.get_user(owner)
@@ -135,7 +136,7 @@ def save_repo_meta(repo_url):
     """
     if 'github.' in repo_url:
         try:
-            meta_dict = get_github_meta(repo_url, cf.USER, cf.TOKEN)
+            meta_dict = get_github_repo_meta(repo_url, cf.USER, cf.TOKEN)
             df_meta = pd.DataFrame([meta_dict], columns=REPO_COLUMNS)
 
             if db.table_exists('repository'):
@@ -148,7 +149,7 @@ def save_repo_meta(repo_url):
             cf.logger.warning(f'Problem while fetching repository meta-information: {e}')
 
 
-def store_tables(df_fixes):
+def fetch_and_store_commits(df_fixes):
     """
     Fetch the commits and save the extracted data into commit-, file- and method level tables.
     """
@@ -231,7 +232,7 @@ if __name__ == '__main__':
     # Step (1) save CVEs(cve) and cwe tables
     cve_importer.import_cves()
     # Step (2) save commit-, file-, and method- level data tables to the database
-    store_tables(get_ref_links())
+    fetch_and_store_commits(populate_fixes_table())
     # Step (3) pruning the database tables
     if db.table_exists('method_change'):
         prune_tables(cf.DATABASE)

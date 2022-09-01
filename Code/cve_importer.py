@@ -15,7 +15,7 @@ from zipfile import ZipFile
 from pandas import json_normalize
 
 from constants import URL_HEAD, URL_TAIL, INIT_YEAR, ORDERED_CVE_COLUMNS, CWE_COLUMNS, DROP_CVE_COLUMNS
-from extract_cwe_record import add_cwe_class,  extract_cwe
+from extract_cwe_record import get_cwe_class,  extract_cwe
 import configuration as cf
 import database as db
 
@@ -70,7 +70,7 @@ def assign_cwes_to_cves(df_cve: pd.DataFrame):
     # fetching CWE associations to CVE records
     cf.logger.info('Adding CWE category to CVE records...')
     df_cwes_class = df_cve[['cve_id', 'problemtype_json']].copy()
-    df_cwes_class['cwe_id'] = add_cwe_class(df_cwes_class['problemtype_json'].tolist())  # list of CWE-IDs' portion
+    df_cwes_class['cwe_id'] = get_cwe_class(df_cwes_class['problemtype_json'].tolist())  # list of CWE-IDs' portion
 
     # exploding the multiple CWEs list of a CVE into multiple rows.
     df_cwes_class = df_cwes_class.assign(

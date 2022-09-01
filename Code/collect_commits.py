@@ -15,7 +15,7 @@ from utils import log_commit_urls
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 
-def extract_project_links(df_master):
+def extract_project_links(df_cve_table: pd.DataFrame):
     """
     extracts all the reference urls from CVE records that match to the repo commit urls
     """
@@ -23,15 +23,15 @@ def extract_project_links(df_master):
     git_url = r'(((?P<repo>(https|http):\/\/(bitbucket|github|gitlab)\.(org|com)\/(?P<owner>[^\/]+)\/(?P<project>[^\/]*))\/(commit|commits)\/(?P<hash>\w+)#?)+)'
     cf.logger.info('-' * 70)
     cf.logger.info('Extracting all reference URLs from CVEs...')
-    for i in range(len(df_master)):
-        ref_list = ast.literal_eval(df_master['reference_json'].iloc[i])
+    for i in range(len(df_cve_table)):
+        ref_list = ast.literal_eval(df_cve_table['reference_json'].iloc[i])
         if len(ref_list) > 0:
             for ref in ref_list:
                 url = dict(ref)['url']
                 link = re.search(git_url, url)
                 if link:
                     row = {
-                        'cve_id': df_master['cve_id'][i],
+                        'cve_id': df_cve_table['cve_id'][i],
                         'hash': link.group('hash'),
                         'repo_url': link.group('repo').replace(r'http:', r'https:')
                     }

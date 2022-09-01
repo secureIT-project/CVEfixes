@@ -27,7 +27,7 @@ def extract_cwe():
     else:
         cwe_url = 'https://cwe.mitre.org/data/xml/cwec_latest.xml.zip'
         cwe_zip = ZipFile(BytesIO(urlopen(cwe_url).read()))
-        cwe_doc = sorted(fnmatch.filter(cwe_zip.namelist(),'cwec_*.xml'))  # assumes all files at top level
+        cwe_doc = sorted(fnmatch.filter(cwe_zip.namelist(), 'cwec_*.xml'))  # assumes all files at top level
         assert len(cwe_doc) > 0, \
             'Cannot find a CWE XML file in https://cwe.mitre.org/data/xml/cwec_latest.xml.zip'
         cf.logger.info(f'Extracting CWE data from {cwe_doc[-1]}')
@@ -82,12 +82,12 @@ def extract_cwe():
     return df_cwe
 
 
-def add_cwe_class(problem_col):
+def get_cwe_class(cve_cwe_info):
     """
     returns CWEs of the CVE.
     """
     cwe_classes = []
-    for p in problem_col:
+    for p in cve_cwe_info:
         des = str(p).replace("'", '"')
         des = json.loads(des)
         for cwes in json_normalize(des)["description"]:  # for every cwe of each cve.
@@ -96,6 +96,6 @@ def add_cwe_class(problem_col):
             else:
                 cwe_classes.append(["unknown"])
 
-    assert len(problem_col) == len(cwe_classes), \
+    assert len(cve_cwe_info) == len(cwe_classes), \
         "Sizes are not equal - Problem occurred while fetching the cwe classification records!"
     return cwe_classes
