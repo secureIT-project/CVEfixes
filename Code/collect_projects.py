@@ -1,5 +1,4 @@
 import time
-from math import floor
 
 import pandas as pd
 import requests
@@ -49,10 +48,10 @@ def convert_runtime(start_time, end_time) -> (int, int, int):
     converts runtime of the slice of code more readable format
     """
     runtime = end_time - start_time
-    hours = runtime / 3600
-    minutes = (runtime % 3600) / 60
-    seconds = (runtime % 3600) % 60
-    return floor(hours), floor(minutes), round(seconds)
+    hours = runtime // 3600
+    minutes = (runtime - hours * 3600) // 60
+    seconds = runtime - hours * 3600 - minutes * 60
+    return hours, minutes, seconds
 
 
 def populate_fixes_table():
@@ -134,17 +133,16 @@ def save_repo_meta(repo_url):
     """
     populate repository meta-information in repository table.
     """
+    # ignore when the meta-information of the given repo is already saved.
+    if db.table_exists('repository') and db.fetchone_query('repository', 'repo_url', repo_url):
+        return
+
     if 'github.' in repo_url:
         try:
             meta_dict = get_github_repo_meta(repo_url, cf.USER, cf.TOKEN)
             df_meta = pd.DataFrame([meta_dict], columns=REPO_COLUMNS)
 
-            if db.table_exists('repository'):
-                # ignore when the meta-information of the given repo is already saved.
-                if db.fetchone_query('repository', 'repo_url', repo_url) is False:
-                    df_meta.to_sql(name='repository', con=db.conn, if_exists="append", index=False)
-            else:
-                df_meta.to_sql(name='repository', con=db.conn, if_exists="replace", index=False)
+            df_meta.to_sql(name='repository', con=db.conn, if_exists="append", index=False)
         except Exception as e:
             cf.logger.warning(f'Problem while fetching repository meta-information: {e}')
 
