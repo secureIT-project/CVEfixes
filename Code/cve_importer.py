@@ -97,6 +97,11 @@ def preprocess_jsons(df_in):
     # renaming the column names
     df_cve.columns = [rename_columns(i) for i in df_cve.columns]
 
+    # Check and add columns if they are not present in the dataframe
+    for col in ordered_cve_columns:
+        if col not in df_cve.columns:
+            df_cve[col] = ""
+
     # ordering the cve columns
     df_cve = df_cve[ordered_cve_columns]
 
