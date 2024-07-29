@@ -12,23 +12,25 @@ for CVEs in the NVD by providing detailed information at different
 interlinked levels of abstraction, such as the commit-, file-, and
 method level, as well as the repository- and CVE level.
 
-At the initial release, the dataset covers all published CVEs up to 9
-June 2021. All open-source projects that were reported in CVE records
-in the NVD in this time frame and had publicly available git
-repositories were fetched and considered for the construction of this
-vulnerability dataset. The dataset is organized as a relational
-database and covers 5495 vulnerability fixing commits in 1754 open
-source projects for a total of 5365 CVEs in 180 different Common
-Weakness Enumeration (CWE) types. The dataset includes the source code
-before and after fixing of 18249 files, and 50322 functions. Because 
-of limitations in GitHub storage, we provide a compressed SQL
-dump of the _CVEfixes_ vulnerability dataset via Zenodo with DOI:
-[10.5281/zenodo.4476563](https://doi.org/10.5281/zenodo.4476563).
-
 This repository includes the code to replicate the data collection. 
 The complete process has been documented in the paper _"CVEfixes: 
 Automated Collection of Vulnerabilities and Their Fixes from Open-
 Source Software"_, a copy of which you will find in the Doc folder.
+
+Because of limitations in GitHub storage, the dataset itself is 
+released via Zenodo with DOI:
+[10.5281/zenodo.4476563](https://doi.org/10.5281/zenodo.4476563).
+
+The latest release, v1.0.8, covers all published CVEs up to 23 July 2024. 
+All open-source projects that were reported in CVE records in the 
+NVD in this time frame and had publicly available git repositories 
+were fetched and considered for the construction of this vulnerability 
+dataset. The dataset is organized as a relational database and covers 
+12107 vulnerability fixing commits in 4249 open source projects for 
+a total of 11873 CVEs in 272 different Common Weakness Enumeration 
+(CWE) types. The dataset includes the source code before and after 
+changing 51342 files and 138974 functions. The collection took 48 
+hours with 4 workers (AMD EPYC Genoa-X 9684X).
 
   * instructions for using _CVEfixes_ are in the 
     first section of [INSTALL.md](INSTALL.md).
